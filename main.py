@@ -1,37 +1,37 @@
 
 
 def remove_duplicates(lst):
-    seen = []
-    return [x for i, x in enumerate(lst) if x not in seen or not seen.append(x)]
+    #seen = []
+    #return [x for i, x in enumerate(lst) if x not in seen or not seen.append(x)]
+    from collections import OrderedDict
+
+    #my_list = [1, 2, 3, 2, 4, 3, 5]
+    unique_items = list(OrderedDict.fromkeys(lst))
+    return  unique_items
+
+def file_to_clean_str(file):
+    import re
+    openfile = open(file,"r")
+    clean = ''
+    for line in openfile:
+            #for symbol in ["\n",':','.',"'",'&','-']:
+        lineclean =  re.sub(r'[^\w\s]', '', line)
+        lineclean = lineclean.replace("\n"," ")
+        clean = clean + lineclean
+    return clean
 
 
-def openchop(filename,rt):
-    g=0
-    chumbucet=()
-    opendfl = open(filename,"r")
-    for d in opendfl:
-        splut= d.split()
-        for wo in splut:
+def string_to_dict(fullstring):
+    # fullstring must have all words and terms of data set in it!!!!
 
-            chumbucet = chumbucet+tuple(wo)
-    opendfl.close()
-    opendfl = open(filename, "r")
-    raw = opendfl.read()
-    rep = raw.replace(" \n , . ! - : ", ' ')
-
-    bits = sorted({x for x in chumbucet})
-    opendfl.close()
-
-    #chumbucet= chumbucet.replace('\n', ' ')
-    #overbord = chumbucet.split('<')
-    if rt=='over':
-        return overbord
-    if rt=='bitdit':
-        return bits
+    split_string = fullstring.split()
+    single_list= remove_duplicates(split_string)
+    sorted_list= sorted(single_list)
+    pass
 
 def seter():
-    dike = openchop('input.txt', 'bitdit')
-    listofdp = openchop('input.txt', 'over')
+    dike = file_to_dict('input.txt', 'bitdit')
+    listofdp = file_to_dict('input.txt', 'over')
     matrixs=[]
     fu = ''
     for word in listofdp:
@@ -50,7 +50,10 @@ def seter():
     return matrixs,fu
 
 def main():
-
+    pass
 if __name__ == '__main__':
-    print(openchop('input.txt', 'bitdit'))
+    string_to_dict(file_to_clean_str('input.txt'))
+    print(file_to_clean_str('input.txt'))
+    #print(file_to_dict('input.txt', 'bitdit'))
     #print(seter())
+
