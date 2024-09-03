@@ -1,3 +1,9 @@
+from dataclasses import dataclass
+@dataclass
+class datapoint
+    unique_name: str
+    dict_matrix: list
+    relation_map: dict
 
 
 def remove_duplicates(lst):
@@ -27,27 +33,12 @@ def string_to_dict(fullstring):
     split_string = fullstring.split()
     single_list= remove_duplicates(split_string)
     sorted_list= sorted(single_list)
-    pass
+    return sorted_list
 
-def seter():
-    dike = file_to_dict('input.txt', 'bitdit')
-    listofdp = file_to_dict('input.txt', 'over')
-    matrixs=[]
-    fu = ''
-    for word in listofdp:
-        try:
-            dikindex = dike.index(word)
-            docindex = word.index(listofdp)
-            word[docindex]=dikindex
+def string_in_dataset_to_matrix(string_in_data,datadict):
+    data_list_split= string_in_data.split()
+    data_list_singal= remove_duplicates(data_list_split)
 
-
-        except(ValueError):
-            fu= fu+word
-            print(fu)
-
-    matrixs.append()
-
-    return matrixs,fu
 
 def main():
     pass
