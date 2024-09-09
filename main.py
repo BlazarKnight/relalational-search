@@ -1,3 +1,22 @@
+'''
+    relalational-search
+    A search algorithm that aims to search beyond the keywords.
+    Copyright (C) 2024 Kai Broadbent
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. '''
+
+
 import itertools
 from dataclasses import dataclass
 from collections import defaultdict
@@ -9,7 +28,7 @@ import timeit
 class datapoint:
     unique_name: str
     matrix: list
-    relation_map: dict
+
     def name_qury(self):
         return self.unique_name
     def dict_matrix_qury(self):
@@ -51,6 +70,9 @@ class mater_dict:
             if look_word in tupl:
                 send += (tupl[1], True, look_word)
         return send
+@dataclass
+class relation_map:
+    map: list
 
 
 
@@ -91,7 +113,7 @@ def string_to_dict(fullstring):
     matrix = [(word, word_counts[word]) for word in sorted_data_list]
     return mater_dict(matrix=matrix)
 
-def function_for_map(point1:datapoint,point2:datapoint,dict):
+def function_for_map(point1:datapoint,point2:datapoint,dict,relation_maap):
     relation_fromword=0
     p1_word_list=[]
     p1_word_list += point1.words()
@@ -102,7 +124,7 @@ def function_for_map(point1:datapoint,point2:datapoint,dict):
             print('wtf',dict.word_ocerenses(word))
 
         if len(remove_duplicates(point1.words()+point2.words()))>0 and point2.word_ocerenses(word)[1]  :
-            print('.')
+
             combind_ocrents=(point2.word_ocerenses(word)[0]+point1.word_ocerenses(word)[0])
             total_occents_in_data=dict.word_ocerenses(word)[0]
             relation_fromword += (combind_ocrents / total_occents_in_data)+1
@@ -111,12 +133,10 @@ def function_for_map(point1:datapoint,point2:datapoint,dict):
         elif point2.word_ocerenses(word)[1] and dict.word_ocerenses(word)[1]:
             print('what the hell',bools)
             break
-    try:
-        print(relation_fromword)
 
-        return relation_fromword
-    except(TypeError):
-        return relations
+        relation_maap.map +=(point1.unique_name,relation_fromword,point2.unique_name)
+    return relation_maap
+
 
 
 
