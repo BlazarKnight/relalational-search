@@ -27,29 +27,21 @@ import re
 @dataclass
 class datapoint:
     unique_name: str
-    matrix: list
+    matrix: dict
+
 
     def name_qury(self):
         return self.unique_name
     def dict_matrix_qury(self):
         return self.matrix
-    def relation_map_qury(self):
-        return self.relation_map
-    def word_ocerenses(self,look_word):
-        send = ()
-        for tupl in self.matrix:
 
-            if look_word in tupl:
-                send += (tupl[1], True, look_word)
-        if len(send)>0:
-            return send
+    def word_ocerenses(self,look_word):
+        if look_word in self.matrix:
+            return (self.matrix[look_word],True)
         else:
-            return(0,False)
+            return(look_word,False)
     def words(self):
-        words=[]
-        for tupl in self.matrix:
-            words.append(tupl[0])
-        return words
+        return list(self.matrix)
 
 @dataclass
 class mater_dict:
@@ -75,6 +67,16 @@ class mater_dict:
 @dataclass
 class relation_map:
     map:set
+    def map_qurry(self):
+        return self.map
+@dataclass
+class NullIterable:
+    def __init__(self):
+        pass
+
+    def __iter__(self):
+        return iter([])  # returns an empty iterator
+
 
 
 
@@ -121,26 +123,27 @@ def function_for_map(point1:datapoint,point2:datapoint,dict):
     p1_word_list=[]
     p1_word_list += point1.words()
     finall_map= set()
-    for word in p1_word_list:
-        print('.')
-
-        if not dict.word_ocerenses(word)[1]:
-            print('wtf',dict.word_ocerenses(word))
-
-        if len(remove_duplicates(point1.words()+point2.words()))>0 and point2.word_ocerenses(word)[1]  :
-
-            combind_ocrents=(point2.word_ocerenses(word)[0]+point1.word_ocerenses(word)[0])
-            total_occents_in_data=dict.word_ocerenses(word)[0]
-            relation_fromword += (combind_ocrents / total_occents_in_data)+1
+    if len(remove_duplicates(point1.words() + point2.words())) > 0 and point1.unique_name != point2.unique_name :
+        for word in p1_word_list:
 
 
-        elif point2.word_ocerenses(word)[1] and dict.word_ocerenses(word)[1]:
-            print('what the hell')
-            break
 
-        finall_map |= {point1.unique_name,relation_fromword,point2.unique_name}
-    return finall_map
+            if not dict.word_ocerenses(word)[1]:
+                print('wtf',dict.word_ocerenses(word))
 
+            if point2.word_ocerenses(word)[1] and point1.word_ocerenses(word)[1]:
+                print('.')
+                combind_ocrents=(point2.word_ocerenses(word)[0]+point1.word_ocerenses(word)[0])
+                total_occents_in_data=dict.word_ocerenses(word)[0]
+                relation_fromword += (combind_ocrents / total_occents_in_data)+1
+
+
+
+        print(finall_map.union(set({point1.unique_name,relation_fromword,point2.unique_name})))
+        finall_map=finall_map.union(set({point1.unique_name,relation_fromword,point2.unique_name}))
+        return finall_map
+    else:
+        return NullIterable()
 
 
 
@@ -161,7 +164,7 @@ def string_in_dataset_to_matrix(string_in_data):
     sorted_data_list = sorted(data_list_singal)  # Sort the list of unique words
 
     matrix = [(word, word_counts[word]) for word in sorted_data_list]
-    return matrix  # Return the matrix of word and occurrence pairs
+    return dict(matrix)  # Return the matrix of word and occurrence pairs
 
 
 
@@ -172,9 +175,9 @@ def string_to_datapoint_without_relations(name:str,data_as_string:str):
 
 def main():
 
-    relatiin_mapp_full= relation_map(map=set())
-    #relatiin_mapp_full.map
-    chunk_size=500
+    relatiin_mapp_full= relation_map(map={})
+    relatiin_mapp_full.map = {"full relatin map"}
+    chunk_size=20000
     openfile = open('input.txt', "r")
     clean = ''
     count=0
@@ -201,14 +204,15 @@ def main():
     for pointstk in list_of_points_before_relatin_maping:
         relation_map_as_list = []
         for pon in list_of_points_before_relatin_maping:
-            try:
-                if len(set(relatiin_mapp_full.map.update(function_for_map(pointstk,pon,mat_dict))))!= len(relatiin_mapp_full.map):
-                    relatiin_mapp_full.map |= function_for_map(pointstk,pon,mat_dict)
+            if type(function_for_map(pointstk,pon,mat_dict)) != NullIterable:
+
+
+                if len(relatiin_mapp_full.map_qurry().update({}+function_for_map(pointstk,pon,mat_dict)))!= len(relatiin_mapp_full.map):
+                    (relatiin_mapp_full.map).update(function_for_map(pointstk,pon,mat_dict))
 
                 else:
                     break
-            except(TypeError):
-                pass
+
     print(list_of_points_before_relatin_maping,relatiin_mapp_full)
 
 
