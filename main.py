@@ -122,6 +122,7 @@ def function_for_map(point1:datapoint,point2:datapoint,dict):
     p1_word_list += point1.words()
     finall_map= set()
     for word in p1_word_list:
+        print('.')
 
         if not dict.word_ocerenses(word)[1]:
             print('wtf',dict.word_ocerenses(word))
@@ -178,6 +179,7 @@ def main():
     clean = ''
     count=0
     full_str=''
+    lenchecker=0
     list_of_points_before_relatin_maping=[]
     for line in openfile:
         count += 1
@@ -199,10 +201,14 @@ def main():
     for pointstk in list_of_points_before_relatin_maping:
         relation_map_as_list = []
         for pon in list_of_points_before_relatin_maping:
-            relatiin_mapp_full.map |= function_for_map(pointstk,pon,mat_dict)
+            try:
+                if len(set(relatiin_mapp_full.map.update(function_for_map(pointstk,pon,mat_dict))))!= len(relatiin_mapp_full.map):
+                    relatiin_mapp_full.map |= function_for_map(pointstk,pon,mat_dict)
 
-
-
+                else:
+                    break
+            except(TypeError):
+                pass
     print(list_of_points_before_relatin_maping,relatiin_mapp_full)
 
 
