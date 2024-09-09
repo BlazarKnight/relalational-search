@@ -21,7 +21,7 @@ import itertools
 from dataclasses import dataclass
 from collections import defaultdict
 import timeit
-
+import re
 
 
 @dataclass
@@ -70,9 +70,12 @@ class mater_dict:
             if look_word in tupl:
                 send += (tupl[1], True, look_word)
         return send
+
+
 @dataclass
 class relation_map:
-    map: list
+    map:set
+
 
 
 
@@ -113,11 +116,11 @@ def string_to_dict(fullstring):
     matrix = [(word, word_counts[word]) for word in sorted_data_list]
     return mater_dict(matrix=matrix)
 
-def function_for_map(point1:datapoint,point2:datapoint,dict,relation_maap):
+def function_for_map(point1:datapoint,point2:datapoint,dict):
     relation_fromword=0
     p1_word_list=[]
     p1_word_list += point1.words()
-
+    finall_map= set()
     for word in p1_word_list:
 
         if not dict.word_ocerenses(word)[1]:
@@ -131,11 +134,11 @@ def function_for_map(point1:datapoint,point2:datapoint,dict,relation_maap):
 
 
         elif point2.word_ocerenses(word)[1] and dict.word_ocerenses(word)[1]:
-            print('what the hell',bools)
+            print('what the hell')
             break
 
-        relation_maap.map +=(point1.unique_name,relation_fromword,point2.unique_name)
-    return relation_maap
+        finall_map |= {point1.unique_name,relation_fromword,point2.unique_name}
+    return finall_map
 
 
 
@@ -162,13 +165,14 @@ def string_in_dataset_to_matrix(string_in_data):
 
 
 def string_to_datapoint_without_relations(name:str,data_as_string:str):
-    point=datapoint(unique_name=name,matrix=string_in_dataset_to_matrix(data_as_string),relation_map=None)
+    point=datapoint(unique_name=name,matrix=string_in_dataset_to_matrix(data_as_string))
 
     return point
 
 def main():
-    import re
-    start = timeit.default_timer()
+
+    relatiin_mapp_full= relation_map(map=set())
+    #relatiin_mapp_full.map
     chunk_size=500
     openfile = open('input.txt', "r")
     clean = ''
@@ -195,19 +199,11 @@ def main():
     for pointstk in list_of_points_before_relatin_maping:
         relation_map_as_list = []
         for pon in list_of_points_before_relatin_maping:
-
-            if pointstk != pon and len(set( pon.matrix + pointstk.matrix))<len(pon.matrix+pointstk.matrix):
-                relation_map_as_list += [[pon.name_qury(),function_for_map(pointstk,pon,mat_dict)]]
+            relatiin_mapp_full.map |= function_for_map(pointstk,pon,mat_dict)
 
 
-                bo=True
-            else:
-                bo=False
-            if bo and pointstk.relation_map != dict(relation_map_as_list) :
-                pointstk.relation_map=dict(relation_map_as_list)
-                full_points_list.append(pointstk)
 
-    print(full_points_list)
+    print(list_of_points_before_relatin_maping,relatiin_mapp_full)
 
 
 
