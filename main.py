@@ -16,13 +16,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>. '''
 
-
+import pickle
 import itertools
 from dataclasses import dataclass
 from collections import defaultdict
 import timeit
 import re
-
+from collections import Counter
 
 @dataclass
 class datapoint:
@@ -42,6 +42,9 @@ class datapoint:
             return(look_word,False)
     def words(self):
         return list(self.matrix)
+
+    def __hash__(self):
+        return hash(self.unique_name)
 
 @dataclass
 class mater_dict:
@@ -69,6 +72,9 @@ class relation_map:
     map:set
     def map_qurry(self):
         return self.map
+
+
+
 @dataclass
 class NullIterable:
     def __init__(self):
@@ -132,7 +138,7 @@ def function_for_map(point1:datapoint,point2:datapoint,dict):
                 print('wtf',dict.word_ocerenses(word))
 
             if point2.word_ocerenses(word)[1] and point1.word_ocerenses(word)[1]:
-                print('.')
+
                 combind_ocrents=(point2.word_ocerenses(word)[0]+point1.word_ocerenses(word)[0])
                 total_occents_in_data=dict.word_ocerenses(word)[0]
                 relation_fromword += (combind_ocrents / total_occents_in_data)+1
@@ -140,7 +146,7 @@ def function_for_map(point1:datapoint,point2:datapoint,dict):
 
 
         print(finall_map.union(set({point1.unique_name,relation_fromword,point2.unique_name})))
-        finall_map=finall_map.union(set({point1.unique_name,relation_fromword,point2.unique_name}))
+        finall_map=finall_map.union(set([(frozenset((point1.unique_name,relation_fromword,point2.unique_name)))]))
         return finall_map
     else:
         return NullIterable()
@@ -176,12 +182,13 @@ def string_to_datapoint_without_relations(name:str,data_as_string:str):
 def main():
 
     relatiin_mapp_full= relation_map(map={})
-    relatiin_mapp_full.map = {"full relatin map"}
-    chunk_size=20000
+    relatiin_mapp_full.map = {""}
+    chunk_size=2000
     openfile = open('input.txt', "r")
     clean = ''
     count=0
     full_str=''
+    list_of_point_names=[]
     lenchecker=0
     list_of_points_before_relatin_maping=[]
     for line in openfile:
@@ -195,26 +202,45 @@ def main():
         if count % chunk_size==0:
             point=string_to_datapoint_without_relations(f'lines{count-chunk_size}-{count}',clean)
             list_of_points_before_relatin_maping.append(point)
+            list_of_point_names.append(point.unique_name)
             clean =''
 
     mat_dict= string_to_dict(full_str)
-    print(mat_dict)
+
+    test_list= list_of_point_names
+    l = list(itertools.combinations(test_list, 2))
+    list_of_point_combos = list(set(l))
+
 
     full_points_list=[]
-    for pointstk in list_of_points_before_relatin_maping:
+    for pointstk in list_of_point_combos :
         relation_map_as_list = []
-        for pon in list_of_points_before_relatin_maping:
-            if type(function_for_map(pointstk,pon,mat_dict)) != NullIterable:
+        pon1_as_list =  [pont1 for pont1 in list_of_points_before_relatin_maping if pont1.unique_name == pointstk[0]]
+        pon2_as_list =  [pont2 for pont2 in list_of_points_before_relatin_maping if pont2.unique_name == pointstk[1]]
+        for pon1 in pon1_as_list:
+            for pon2 in pon2_as_list:
+                if type(function_for_map(pon1,pon2,mat_dict)) != NullIterable:
+
+                    bob=relatiin_mapp_full.map_qurry()
+                    print(bob,"bob")
+                    if function_for_map(pon1,pon2,mat_dict) not in relatiin_mapp_full.map_qurry():
+                        if (relatiin_mapp_full.map_qurry().update(function_for_map(pon1,pon2,mat_dict)))==None:
+                            pass
 
 
-                if len(relatiin_mapp_full.map_qurry().update({}+function_for_map(pointstk,pon,mat_dict)))!= len(relatiin_mapp_full.map):
-                    (relatiin_mapp_full.map).update(function_for_map(pointstk,pon,mat_dict))
+                        elif len(relatiin_mapp_full.map_qurry().update(function_for_map(pon1,pon2,mat_dict)))!= len(relatiin_mapp_full.map):
+                            relatiin_mapp_full.map.update({function_for_map(pon1,pon2,mat_dict)})
 
-                else:
-                    break
+
 
     print(list_of_points_before_relatin_maping,relatiin_mapp_full)
-
+    with open("points.pickle", "wb") as file:
+        pickle.dump(list_of_points_before_relatin_maping, file)
+    with open("dict.pickle", "wb") as file:
+        pickle.dump(mat_dict, file)
+    with open("relationmap.pickle","wb") as file:
+        pickle.dump(relatiin_mapp_full, file)
+    print("done")
 
 
 
