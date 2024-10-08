@@ -24,6 +24,9 @@ import timeit
 import re
 from collections import Counter
 
+from userpath.cli import append
+
+
 @dataclass
 class datapoint:
     unique_name: str
@@ -40,8 +43,10 @@ class datapoint:
             return (self.matrix[look_word],True)
         else:
             return(look_word,False)
+
     def words(self):
-        return list(self.matrix)
+        dictofm=dict(self.matrix)
+        return tuple(dictofm.keys())
 
     def __hash__(self):
         return hash(self.unique_name)
@@ -52,18 +57,21 @@ class mater_dict:
     matrix:list
 
     def words(self):
-        words = []
-        for tupl in self.matrix:
-            words.append(tupl[0])
-        return words
+
+        return [x[0] for x in self.matrix]
 
 
     def word_ocerenses(self,look_word):
         send=()
+        k=[x[0] for x in self.matrix]
         for tupl in self.matrix:
 
             if look_word in tupl:
-                send += (tupl[1], True, look_word)
+                send = (tupl[1], True, look_word)
+            elif look_word not in k:
+
+
+                send =(look_word,False)
         return send
 
 
@@ -83,8 +91,12 @@ class NullIterable:
     def __iter__(self):
         return iter([])  # returns an empty iterator
 
-
-
+@dataclass
+class searchdict:
+    mastdict: list
+    def keywords(self):
+        out=[x[0] for x in self.mastdict]
+        return out
 
 
 def remove_duplicates(lst):
@@ -124,6 +136,41 @@ def string_to_dict(fullstring,numofdoc):
     matrix = [(word, float(word_counts[word])/numofdoc) for word in sorted_data_list]
     return mater_dict(matrix=matrix)
 
+def list_of_data_points_to_dict(point_list:list):
+    number_of_docs=len(point_list)
+    listofwordlists = [pnt.words() for pnt in point_list]
+
+    wordlist = []
+    wordli=[]
+    for wordsk in listofwordlists:
+
+        wordli += wordsk[0:len(wordsk)]
+    wordlist+=wordli
+
+
+
+
+    words = sorted(set(wordlist))
+
+
+
+    mast_dict_as_list =[]
+    for word in words:
+        wordocer=0
+        for point in point_list:
+            if point.word_ocerenses(word)[1]:
+                wordocer += point.word_ocerenses(word)[0]
+        toadd= (word,wordocer/number_of_docs)
+        mast_dict_as_list.append(toadd)
+        #[x[0] for x in mast_dict_as_list ]
+    return mater_dict(matrix=mast_dict_as_list)
+
+
+
+
+
+
+
 def function_for_map(point1:datapoint,dict):
     relation_fromword=0
     p1_word_list=[]
@@ -135,7 +182,7 @@ def function_for_map(point1:datapoint,dict):
 
 
         if not dict.word_ocerenses(word)[1]:
-            print('wtf',dict.word_ocerenses(word))
+            print('wtf',"166",dict.word_ocerenses(word))
 
         else:
 
@@ -145,7 +192,7 @@ def function_for_map(point1:datapoint,dict):
             distubutinsumaslist.append(relation_fromword)
 
 
-        print(finall_map.union(set({point1.unique_name,sum(distubutinsumaslist)})))
+        
         finall_map=finall_map.union(set([(frozenset((point1.unique_name,sum(distubutinsumaslist))))]))
         return finall_map
     else:
@@ -179,6 +226,34 @@ def string_to_datapoint_without_relations(name:str,data_as_string:str):
 
     return point
 
+
+def list_of_poins_to_map(listofpoints,mat_dict):
+    relatiin_mapp_full = byzdis_disubution_map(map={})
+    relatiin_mapp_full.map = {""}
+
+    for pointstk in listofpoints:
+
+
+        if type(function_for_map(pointstk, mat_dict)) != NullIterable:
+
+
+
+            if function_for_map(pointstk, mat_dict) not in relatiin_mapp_full.map_qurry():
+
+                if (relatiin_mapp_full.map_qurry().update(function_for_map(pointstk, mat_dict))) == None:
+                    pass
+
+
+                elif len(relatiin_mapp_full.map_qurry().update(function_for_map(pointstk, mat_dict))) != len(relatiin_mapp_full.map):
+                    relatiin_mapp_full.map+={function_for_map(pointstk, mat_dict)}
+
+    return relatiin_mapp_full
+
+
+
+
+
+
 def main():
 
     relatiin_mapp_full= byzdis_disubution_map(map={})
@@ -208,29 +283,14 @@ def main():
             clean =''
 
     mat_dict= string_to_dict(full_str,number_of_docs)
+    #print("267",mat_dict)
+    v=list_of_poins_to_map(list_of_points_before_relatin_maping, mat_dict)
+    v.mastdict= list(v.map)
+    print( v,"240")
+
+    dictfromdp= list_of_data_points_to_dict(list_of_points_before_relatin_maping)
 
 
-
-    full_points_list=[]
-    for pointstk in list_of_points_before_relatin_maping :
-
-
-        if type(function_for_map(pointstk,mat_dict)) != NullIterable:
-
-            bob=relatiin_mapp_full.map_qurry()
-            print(bob,"bob")
-            if function_for_map(pointstk,mat_dict) not in relatiin_mapp_full.map_qurry():
-
-                if (relatiin_mapp_full.map_qurry().update(function_for_map(pointstk,mat_dict)))==None:
-                    pass
-
-
-                elif len(relatiin_mapp_full.map_qurry().update(function_for_map(pointstk,mat_dict)))!= len(relatiin_mapp_full.map):
-                    relatiin_mapp_full.map.update({function_for_map(pon1,mat_dict)})
-
-
-
-    print(list_of_points_before_relatin_maping,relatiin_mapp_full)
     with open("points.pickle", "wb") as file:
         pickle.dump(list_of_points_before_relatin_maping, file)
     with open("dict.pickle", "wb") as file:
