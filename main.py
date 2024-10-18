@@ -276,11 +276,10 @@ def searchalgo(search_terms:str,compleat_data_as_points_list:list,master_ditiona
 
         local_before_filter=byzdisrubution_map.unique_name_lookup(lookup_name)[0]
 
-        print(local_before_filter,name_dis_number_pair[0][1])
+
         change_in_local=local_before_filter-name_dis_number_pair[0][1]
         unsorted_list_of_datapoint_names_with_term.append([name_dis_number_pair[0][0],change_in_local])
-        print(name_dis_number_pair[0][0],change_in_local)
-    print(unsorted_list_of_datapoint_names_with_term)
+
     unsorted_list_of_datapoint_names_with_term.sort()
 
     return [name[0] for name in unsorted_list_of_datapoint_names_with_term]
