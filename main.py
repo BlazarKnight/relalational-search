@@ -77,10 +77,20 @@ class mater_dict:
 
 @dataclass
 class byzdis_disubution_map:
-    map:set
+    map:list
     def map_qurry(self):
         return self.map
+    def unique_name_lookup(self,unique_name):
+        send=None
+        k=[x[0] for x in self.map]
+        for tupl in k:
 
+            if unique_name in tupl:
+                send = (float(tupl[1]), True, unique_name)
+
+
+
+        return send
 
 
 @dataclass
@@ -173,10 +183,10 @@ def list_of_data_points_to_dict(point_list:list):
 
 def function_for_map(point1:datapoint,dict):
     relation_fromword=0
-    p1_word_list=[]
+    p1_word_list = list(point1.words())
     distubutinsumaslist=[]
-    p1_word_list += point1.words()
-    finall_map= set()
+
+    finall_map= []
     for word in p1_word_list:
 
 
@@ -193,7 +203,7 @@ def function_for_map(point1:datapoint,dict):
 
 
         
-        finall_map=finall_map.union(set([(frozenset((point1.unique_name,sum(distubutinsumaslist))))]))
+        finall_map.append([point1.unique_name,sum(distubutinsumaslist)])
         return finall_map
     else:
         return NullIterable()
@@ -228,36 +238,59 @@ def string_to_datapoint_without_relations(name:str,data_as_string:str):
 
 
 def list_of_poins_to_map(listofpoints,mat_dict):
-    relatiin_mapp_full = byzdis_disubution_map(map={})
-    relatiin_mapp_full.map = {""}
+    relatiin_mapp_full = byzdis_disubution_map(map=[])
+
 
     for pointstk in listofpoints:
 
 
         if type(function_for_map(pointstk, mat_dict)) != NullIterable:
+            names_in_map=[x[0] for x in relatiin_mapp_full.map_qurry()]
 
 
-
-            if function_for_map(pointstk, mat_dict) not in relatiin_mapp_full.map_qurry():
-
-                if (relatiin_mapp_full.map_qurry().update(function_for_map(pointstk, mat_dict))) == None:
-                    pass
-
-
-                elif len(relatiin_mapp_full.map_qurry().update(function_for_map(pointstk, mat_dict))) != len(relatiin_mapp_full.map):
-                    relatiin_mapp_full.map+={function_for_map(pointstk, mat_dict)}
+            if pointstk.unique_name not in names_in_map:
+                    relatiin_mapp_full.map.append(function_for_map(pointstk, mat_dict))
 
     return relatiin_mapp_full
 
 
 
+def searchalgo(search_terms:str,compleat_data_as_points_list:list,master_ditionary:mater_dict,byzdisrubution_map:byzdis_disubution_map,*term_filtering_stranth:int):
+    list_of_datapoint_with_term=[]
+    unsorted_list_of_datapoint_names_with_term=[]
+    if term_filtering_stranth!=int:
+        use_term_fitering=False
+    for term in search_terms.split():
+        if term in master_ditionary.words():
+            if  not use_term_fitering:
+                list_of_datapoint_with_term += [x for x in compleat_data_as_points_list if term in x.words()]
 
+            elif master_ditionary.word_ocerenses(term)[0]<term_filtering_stranth:
+                list_of_datapoint_with_term += [x for x in compleat_data_as_points_list if term in x.words()]
+            pass
 
+    master_ditionary_from_points_with_terms = list_of_data_points_to_dict(list_of_datapoint_with_term)
+    map_of_points_with_terms=list_of_poins_to_map(list_of_datapoint_with_term,master_ditionary_from_points_with_terms)
+    for name_dis_number_pair in map_of_points_with_terms.map:
+        lookup_name=name_dis_number_pair[0][0]
+
+        local_before_filter=byzdisrubution_map.unique_name_lookup(lookup_name)[0]
+
+        print(local_before_filter,name_dis_number_pair[0][1])
+        change_in_local=local_before_filter-name_dis_number_pair[0][1]
+        unsorted_list_of_datapoint_names_with_term.append([name_dis_number_pair[0][0],change_in_local])
+        print(name_dis_number_pair[0][0],change_in_local)
+    print(unsorted_list_of_datapoint_names_with_term)
+    unsorted_list_of_datapoint_names_with_term.sort()
+
+    return [name[0] for name in unsorted_list_of_datapoint_names_with_term]
+        #else:
+            #return "pleas put a space betwwen each word and number sequence or try different search terms"
 
 def main():
 
-    relatiin_mapp_full= byzdis_disubution_map(map={})
-    relatiin_mapp_full.map = {""}
+    relatiin_mapp_full= byzdis_disubution_map(map=[])
+    relatiin_mapp_full.map = []
     chunk_size=2000
     openfile = open('input.txt', "r")
     clean = ''
@@ -284,12 +317,13 @@ def main():
 
     mat_dict= string_to_dict(full_str,number_of_docs)
     #print("267",mat_dict)
-    v=list_of_poins_to_map(list_of_points_before_relatin_maping, mat_dict)
-    v.mastdict= list(v.map)
-    print( v,"240")
+    bizdismap=list_of_poins_to_map(list_of_points_before_relatin_maping, mat_dict)
+
+    print( bizdismap,"240")
 
     dictfromdp= list_of_data_points_to_dict(list_of_points_before_relatin_maping)
 
+    print(searchalgo('romeo',list_of_points_before_relatin_maping,mat_dict,bizdismap))
 
     with open("points.pickle", "wb") as file:
         pickle.dump(list_of_points_before_relatin_maping, file)
