@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to appblazarknight@gmail.com
 '''
-
+import canopener as can
 import pickle
 #from collections.abc import range_iterator
 from os import close
@@ -335,7 +335,7 @@ def main():
                 linesers = linesers + 1
 
     # print data line by line
-    full_str= cleaner(full_str)
+    full_str= can.can_opener_tsv(pathtofile)[0]
     #print(full_str)
     with open(pathtofile, "r") as file:
 
