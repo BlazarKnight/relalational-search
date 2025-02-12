@@ -347,7 +347,7 @@ def main():
             list_of_points_before_relatin_maping.append(string_to_datapoint_without_relations(name=nameln, data_as_string=cleaner(str(line))))
     #print(list_of_points_before_relatin_maping,'313')
 
-
+    print(nameln)
 
     mat_dict = string_to_dict(full_str, number_of_docs)
     #print("267",mat_dict)
