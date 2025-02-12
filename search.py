@@ -19,7 +19,7 @@ import pickle
 #from collections.abc import range_iterator
 from os import close
 import itertools as it
-import formater.format as form
+#import formater.format as form
 from dataclasses import dataclass
 from collections import defaultdict
 import csv
@@ -72,7 +72,8 @@ class mater_dict:
     def word_ocerenses(self, look_word):
         send = ()
         k = [x[0] for x in self.matrix]
-        send= self.matrix[self.matrix.index(look_word,float)]
+        #send= self.matrix[self.matrix.index(look_word,float)]
+
         for tupl in self.matrix:
 
             if look_word in tupl:
@@ -87,12 +88,23 @@ class mater_dict:
 
     def fastlookup(self,look_world):
 
-        foats= [x[1] for x in self.matrix]
+        ''' foats= [x[1] for x in self.matrix]
         placeholder = float(i for i in foats
                             )
 
-        look_tup=(look_world, )
-        return self.matrix[self.matrix.index(look_tup)]
+        look_tup=(look_world, )'''
+        lis=[i for i, x in enumerate(self.matrix) if x[0] == look_world]
+        #print([i for i, x in enumerate(self.matrix) if x[0] == look_world])
+        for i in lis:
+            return (self.matrix[i])
+
+        return  [i for i, x in enumerate(self.matrix) if x[0] == look_world]
+
+    def topwords(self,topwhat: int):
+        a = sorted(self.matrix,reverse=True, key=lambda x: x[1])
+
+        return a[0:topwhat-1]
+
 
 @dataclass
 class byzdis_disubution_map:
@@ -339,14 +351,18 @@ def main():
 
     mat_dict = string_to_dict(full_str, number_of_docs)
     #print("267",mat_dict)
-    termlist = 'trump', 'zog','zag'
+    termlist = 'trump', 'zog'
     for i in termlist:
         if i in mat_dict.words():
-            print(mat_dict.fastlookup(i))
-            print(mat_dict.word_ocerenses(i)[3])
+            print(mat_dict.fastlookup(i),"351")
+        else:
+            print(i,"is not in the data set ")
+    print(mat_dict.topwords(1000))
+
+
    # print(.index(x))
     #print([termlist[m] for m in range(0,3)])
-    print( mat_dict.words().index([termlist[m] for m in range(0,3)]))
+    #print( mat_dict.words().index([termlist[m] for m in range(0,3)]))
     #termsindata= [  in mat_dict.words()    ]
 
 
