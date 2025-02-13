@@ -100,10 +100,18 @@ class mater_dict:
 
         return  [i for i, x in enumerate(self.matrix) if x[0] == look_world]
 
-    def topwords(self,topwhat: int):
-        a = sorted(self.matrix,reverse=True, key=lambda x: x[1])
+    def topwords(self,topwhat: int,sortpat:int,*retpat:int):
 
-        return a[0:topwhat-1]
+        print(retpat)
+        print(sortpat)
+        sortedlist = sorted(self.matrix, key=lambda x: x[sortpat])
+        if retpat==():
+            return sortedlist[0:topwhat - 1]
+        if retpat != () and int(retpat[0]) <= len(sortedlist[0])-1:
+            return [i[retpat[0]] for i in sortedlist[0:topwhat - 1]]
+
+        print(retpat)# <= len(sortedlist[0])-1)
+        return sortedlist[0:topwhat-1]
 
 
 @dataclass
@@ -173,7 +181,7 @@ def cleaner(lin):
 def string_to_dict(fullstring, numofdoc):
     # fullstring must have all words and terms of data set in it!!!!
     data_list_split = fullstring.split()  # Split the string into a list of words
-
+    wordcounttot=len(data_list_split)# conts the numer of words in the dataset
     # Count the occurrences of each word in data_list_split using a defaultdict
     word_counts = defaultdict(int)
     for word in data_list_split:
@@ -182,7 +190,7 @@ def string_to_dict(fullstring, numofdoc):
     data_list_singal = set(data_list_split)  # Remove duplicates using a set
     sorted_data_list = sorted(data_list_singal)  # Sort the list of unique words
 
-    matrix = [(word, float(word_counts[word]) / numofdoc) for word in sorted_data_list]
+    matrix = [(word, float(word_counts[word]) / numofdoc, float( float(word_counts[word]) / wordcounttot)/ numofdoc,word_counts[word] ) for word in sorted_data_list]
     return mater_dict(matrix=matrix)
 
 
@@ -315,7 +323,7 @@ def main():
     lenchecker = 0
     with open(pathtofile, "r") as tsvfile:
         row_count = sum(1 for line in tsvfile)
-    number_of_docs = terbo #row_count
+    number_of_docs = row_count #row_count
     list_of_points_before_relatin_maping = []
     linesers = 0
 
@@ -357,9 +365,10 @@ def main():
             print(mat_dict.fastlookup(i),"351")
         else:
             print(i,"is not in the data set ")
-    print(mat_dict.topwords(1000))
-
-
+    print(mat_dict.topwords(500,1,0))
+    print(mat_dict.topwords(500, 2, 0))
+    print(mat_dict.topwords(500, 3, 0))
+    print(mat_dict.topwords(500000, 1, 0)==mat_dict.topwords(500, 3, 0))
    #
     # print(.index(x))
     #print([termlist[m] for m in range(0,3)])
