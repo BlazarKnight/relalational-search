@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "relational-search"
+
+version = "0.1.0"
+description = "A search algorithm that aims to search beyond the keywords"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [{ name = "Kai Broadbent", email = "kai.broadbentohs@gmail.com" }]
+keywords = ["nlp", "search", "analysis"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)",
+  "Operating System :: OS Independent",
+]
+
+# Runtime dependencies (if any)
+dependencies = [
+  # "some-dependency>=1.2"
+]
+
+[project.urls]
+Homepage = "https://github.com/BlazarKnight/relalational-search"
+Repository = "https://github.com/BlazarKnight/relalational-search/tree/main"
+Issues = "https://github.com/BlazarKnight/relalational-search/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["your_package_name*"]
+
+# Optional: create a CLI command `your-tool`
+[project.scripts]
+your-tool = "your_package_name.cli:main"

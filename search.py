@@ -1,4 +1,4 @@
-''' Seagull search to define the fuctions that controle databace searching and oganization ,
+''' hate speach analizis computes relationships and trend in data ,
     Copyright (C) 2024 Kai Broadbent 'BlazarKnight'
 
     This program is free software; you can redistribute it and/or modify

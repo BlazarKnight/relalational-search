@@ -1,4 +1,4 @@
-""" Seagull format this file defines the funtions that cleans/formats the data form the internet, 
+""" hate speach file cleaner this file defines the funtions that cleans/formats the data form the internet,
     Copyright (C) 2024 Kai Broadbent 'BlazarKnight'
 
     This program is free software; you can redistribute it and/or modify
