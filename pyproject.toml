@@ -24,6 +24,7 @@ dependencies = [
   # "some-dependency>=1.2"
 ]
 
+
 [project.urls]
 Homepage = "https://github.com/BlazarKnight/relalational-search"
 Repository = "https://github.com/BlazarKnight/relalational-search/tree/main"
